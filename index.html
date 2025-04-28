@@ -2,7 +2,6 @@
 <html>
 <head>
     <title>Property Offer Calculator</title>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0"></script>
     <script>
         let currentStep = 1;
 
@@ -19,30 +18,15 @@
             location.reload();
         }
 
-        // Update the multiplier value
-        function updateMultiplierValue() {
-            document.getElementById('multiplierValue').innerText = document.getElementById('multiplierInput').value;
-        }
-
         // Update progress bar
         function updateProgressBar() {
             const progress = (currentStep / 2) * 100; // Adjusted for two steps now
             document.getElementById('progressBar').style.width = `${progress}%`;
         }
 
-        // Trigger confetti animation
-        function triggerConfetti() {
-            confetti({
-                particleCount: 150,
-                spread: 70,
-                origin: { y: 0.6 }
-            });
-        }
-
-        // Calculate the highest offer and profit
+        // Calculate the maximum amount to pay
         function calculateOffer() {
             const arv = parseFloat(document.getElementById('arvInput').value);
-            const multiplier = parseFloat(document.getElementById('multiplierInput').value);
             const repairCost = parseFloat(document.getElementById('repairCostInput').value) || 0;
 
             if (isNaN(arv) || arv <= 0) {
@@ -50,28 +34,11 @@
                 return;
             }
 
-            const offer = arv * multiplier;
-            const profit = arv - repairCost - offer;
-
-            // Save results to localStorage
-            localStorage.setItem("results", JSON.stringify({ arv, multiplier, repairCost, offer, profit }));
+            const multiplier = 0.6; // Fixed at 60%
+            const maxAmount = arv * multiplier - repairCost;
 
             // Display results
-            document.getElementById('offerResult').innerText = `Highest Offer: $${offer.toFixed(2)}`;
-            document.getElementById('profitResult').innerText = `Estimated Profit: $${profit.toFixed(2)}`;
-
-            // Trigger confetti to celebrate
-            triggerConfetti();
-        }
-
-        // View saved results
-        function viewSavedResults() {
-            const savedResults = JSON.parse(localStorage.getItem("results"));
-            if (savedResults) {
-                alert(`ARV: $${savedResults.arv}, Multiplier: ${savedResults.multiplier}, Offer: $${savedResults.offer.toFixed(2)}, Profit: $${savedResults.profit.toFixed(2)}`);
-            } else {
-                alert("No saved results found.");
-            }
+            document.getElementById('offerResult').innerText = `Maximum Amount to Pay: $${maxAmount.toFixed(2)}`;
         }
     </script>
     <style>
@@ -83,6 +50,8 @@
             border: 1px solid #ccc;
             border-radius: 10px;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #001f3f; /* Navy blue background */
+            color: white;
         }
         .progress-bar {
             height: 20px;
@@ -114,20 +83,17 @@
             <h2>Step 1: Enter Values</h2>
             <label for="arvInput">ARV ($):</label>
             <input type="number" id="arvInput" placeholder="Enter ARV"><br>
-            <label for="multiplierInput">Multiplier:</label>
-            <input type="range" id="multiplierInput" min="0.50" max="0.70" step="0.01" value="0.60" oninput="updateMultiplierValue()"> <span id="multiplierValue">0.60</span><br>
-            <label for="repairCostInput">Repair Costs ($):</label>
-            <input type="number" id="repairCostInput" placeholder="Enter repair costs (optional)"><br>
+            <label for="repairCostInput">Cost of Rehab ($):</label>
+            <input type="number" id="repairCostInput" placeholder="Enter cost of rehab"><br>
             <button type="button" onclick="nextStep()">Next</button>
         </div>
         <div id="step2" style="display:none;">
             <h2>Step 2: Results</h2>
             <button type="button" onclick="calculateOffer()">Calculate</button>
             <p id="offerResult"></p>
-            <p id="profitResult"></p>
-            <button type="button" onclick="viewSavedResults()">View Saved Results</button>
             <button type="button" onclick="restart()">Restart</button>
         </div>
     </form>
 </body>
 </html>
+
